@@ -5,12 +5,6 @@
     <title>LockChain - Securing Your Most Valuable Documents with Blockchain Technology</title>
     <!-- Include Web3.js library -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
-    <!-- Include Coinbase Wallet SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@latest/dist/coinbase-wallet.umd.min.js"></script>
-
-
-	
-    
     <!-- Include Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     
@@ -314,11 +308,10 @@
 
         <!-- Connect Wallet Buttons -->
         <button onclick="connectWallet('metamask')">Connect MetaMask</button>
-        <button onclick="connectWallet('coinbase')">Connect Coinbase Wallet</button>
+        <button id="coinbaseBtn" onclick="connectWallet('coinbase')">Connect Coinbase Wallet</button>
     	<button id="edgeCoinbaseBtn" onclick="connectEdgeCoinbaseWallet()" style="display: none;">Connect Coinbase Wallet (Edge)</button>
         <button onclick="disconnectWallet()">Disconnect Wallet</button>
         <p id="walletAddress">Not connected</p>
-
 
         <!-- Hash and Register Document -->
         <h3>Hash Your PDF Document</h3>
@@ -351,6 +344,11 @@
     <div class="footer">
         &copy; 2023 LockChain. All rights reserved.
     </div>
+
+    <!-- Include the Correct Coinbase Wallet SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@latest/dist/coinbase-wallet.umd.min.js"></script>
+
+    <!-- Your Custom JavaScript -->
     <script>
         let web3;
         let contract;
@@ -358,7 +356,6 @@
         let hashHex;
         let selectedProvider;
         let coinbaseWallet;
-
 
         // Contract ABI (Reformatted for Readability)
         const contractABI = [
@@ -582,11 +579,18 @@
         // Contract address (Ensure this matches your deployed contract)
         const contractAddress = '0xca2f282ab9d7b2ae33FDe040142C1c185B6591b4';
 
-      // Detect Edge and Display Appropriate Button
+        // Detect Edge and Display Appropriate Button
         document.addEventListener('DOMContentLoaded', () => {
             if (isEdge()) {
-                document.getElementById('coinbaseBtn').style.display = 'none';
-                document.getElementById('edgeCoinbaseBtn').style.display = 'inline-block';
+                const coinbaseBtn = document.getElementById('coinbaseBtn');
+                const edgeCoinbaseBtn = document.getElementById('edgeCoinbaseBtn');
+                
+                if (coinbaseBtn && edgeCoinbaseBtn) {
+                    coinbaseBtn.style.display = 'none';
+                    edgeCoinbaseBtn.style.display = 'inline-block';
+                } else {
+                    console.error('Button elements not found');
+                }
             }
         });
 
@@ -605,6 +609,10 @@
             } else if (wallet === 'coinbase') {
                 // Initialize Coinbase Wallet SDK
                 try {
+                    if (typeof CoinbaseWalletSDK === 'undefined') {
+                        throw new Error('CoinbaseWalletSDK is not loaded');
+                    }
+
                     coinbaseWallet = new CoinbaseWalletSDK({
                         appName: 'LockChain',
                         appLogoUrl: 'https://yourapp.com/logo.png', // Ensure this URL is correct
@@ -647,6 +655,10 @@
         async function connectEdgeCoinbaseWallet() {
             try {
                 // Initialize Coinbase Wallet SDK for Edge
+                if (typeof CoinbaseWalletSDK === 'undefined') {
+                    throw new Error('CoinbaseWalletSDK is not loaded');
+                }
+
                 const coinbaseWalletEdge = new CoinbaseWalletSDK({
                     appName: 'LockChain',
                     appLogoUrl: 'https://yourapp.com/logo.png', // Ensure this URL is correct
