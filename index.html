@@ -5,6 +5,7 @@
     <title>LockChain - Securing Your Most Valuable Documents with Blockchain Technology</title>
     <!-- Include Web3.js library -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
+    
     <!-- Include Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     
@@ -309,7 +310,7 @@
         <!-- Connect Wallet Buttons -->
         <button onclick="connectWallet('metamask')">Connect MetaMask</button>
         <button id="coinbaseBtn" onclick="connectWallet('coinbase')">Connect Coinbase Wallet</button>
-    	<button id="edgeCoinbaseBtn" onclick="connectEdgeCoinbaseWallet()" style="display: none;">Connect Coinbase Wallet (Edge)</button>
+        <button id="edgeCoinbaseBtn" onclick="connectEdgeCoinbaseWallet()" style="display: none;">Connect Coinbase Wallet (Edge)</button>
         <button onclick="disconnectWallet()">Disconnect Wallet</button>
         <p id="walletAddress">Not connected</p>
 
@@ -345,8 +346,12 @@
         &copy; 2023 LockChain. All rights reserved.
     </div>
 
-    <!-- Include the Correct Coinbase Wallet SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@latest/dist/coinbase-wallet.umd.min.js"></script>
+    <!-- Include Coinbase Wallet SDK with onload and onerror -->
+    <script 
+        src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@3.4.0/dist/coinbase-wallet.umd.min.js" 
+        onload="console.log('Coinbase Wallet SDK loaded successfully')" 
+        onerror="console.error('Failed to load Coinbase Wallet SDK')">
+    </script>
 
     <!-- Your Custom JavaScript -->
     <script>
