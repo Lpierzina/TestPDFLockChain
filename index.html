@@ -188,6 +188,10 @@
             color: #1e429f;
         }
 
+          #qrCode {
+            margin-top: 20px;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -789,7 +793,6 @@
             }
         }
 
-        // Function to generate and display the transaction receipt
         function generateReceipt(hashHex, account, transactionHash) {
             const timestamp = new Date().toLocaleString();
             const receiptContent = `
@@ -800,7 +803,24 @@
             `;
             document.getElementById('receiptContent').innerHTML = receiptContent;
             document.getElementById('receipt').style.display = 'block';
+
+            // Generate a verification URL using the same page
+            const currentUrl = window.location.href.split('?')[0]; // Remove any existing query params
+            const verifyURL = `${currentUrl}?verifyHash=${encodeURIComponent(hashHex)}`;
+
+            // Generate the QR code
+            const qrCodeDiv = document.getElementById('qrCode');
+            qrCodeDiv.innerHTML = ''; // Clear any previous QR code
+            new QRCode(qrCodeDiv, {
+                text: verifyURL,
+                width: 128,
+                height: 128,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
         }
+
 
         // Function to verify a document's registration status
         async function verifyDocument() {
