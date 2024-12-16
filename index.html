@@ -765,33 +765,32 @@
             }
         }
 
-        function generateReceipt(hashHex, account, transactionHash) {
-            const timestamp = new Date().toLocaleString();
-            const receiptContent = `
-                <strong>Document Hash:</strong> ${hashHex}<br>
-                <strong>Registered By:</strong> ${account}<br>
-                <strong>Date and Time:</strong> ${timestamp}<br>
-                <strong>Transaction Hash:</strong> <a href="https://sepolia.etherscan.io/tx/${transactionHash}" target="_blank">${transactionHash}</a>
-            `;
-            document.getElementById('receiptContent').innerHTML = receiptContent;
-            document.getElementById('receipt').style.display = 'block';
+       function generateReceipt(hashHex, account, transactionHash) {
+    const timestamp = new Date().toLocaleString();
+    const receiptContent = `
+        <strong>Document Hash:</strong> ${hashHex}<br>
+        <strong>Registered By:</strong> ${account}<br>
+        <strong>Date and Time:</strong> ${timestamp}<br>
+        <strong>Transaction Hash:</strong> <a href="https://sepolia.etherscan.io/tx/${transactionHash}" target="_blank">${transactionHash}</a>
+    `;
+    document.getElementById('receiptContent').innerHTML = receiptContent;
+    document.getElementById('receipt').style.display = 'block';
 
-            // Generate a verification URL using the same page
-            const currentUrl = window.location.href.split('?')[0]; // Remove any existing query params
-            const verifyURL = `${currentUrl}?verifyHash=${encodeURIComponent(hashHex)}`;
+    // Use Etherscan transaction URL for the QR code
+    const etherscanTxURL = `https://sepolia.etherscan.io/tx/${transactionHash}`;
 
-            // Generate the QR code
-            const qrCodeDiv = document.getElementById('qrCode');
-            qrCodeDiv.innerHTML = ''; // Clear any previous QR code
-            new QRCode(qrCodeDiv, {
-                text: verifyURL,
-                width: 128,
-                height: 128,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
+    // Generate the QR code
+    const qrCodeDiv = document.getElementById('qrCode');
+    qrCodeDiv.innerHTML = ''; // Clear any previous QR code
+    new QRCode(qrCodeDiv, {
+        text: etherscanTxURL,
+        width: 128,
+        height: 128,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+}
 
         // Verify document by selecting a file
         async function verifyDocument() {
