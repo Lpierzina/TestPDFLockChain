@@ -5,14 +5,10 @@
     <title>LockChain - Securing Your Most Valuable Documents with Blockchain Technology</title>
     <!-- Include Web3.js library -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
-    
     <!-- Include Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-
-     <!-- Include QRCode.js library -->
+    <!-- Include QRCode.js library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-
-    
     <style>
         /* Reset default browser styles */
         * {
@@ -188,7 +184,7 @@
             color: #1e429f;
         }
 
-          #qrCode {
+        #qrCode {
             margin-top: 20px;
         }
 
@@ -355,12 +351,8 @@
         &copy; 2023 LockChain. All rights reserved.
     </div>
 
-    <!-- Include Coinbase Wallet SDK with onload and onerror -->
-    <script 
-        src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@3.4.0/dist/coinbase-wallet.umd.min.js" 
-        onload="console.log('Coinbase Wallet SDK loaded successfully')" 
-        onerror="console.error('Failed to load Coinbase Wallet SDK')">
-    </script>
+    <!-- Include the Correct Coinbase Wallet SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@latest/dist/coinbase-wallet.umd.min.js"></script>
 
     <!-- Your Custom JavaScript -->
     <script>
@@ -371,15 +363,12 @@
         let selectedProvider;
         let coinbaseWallet;
 
-        // Contract ABI (Reformatted for Readability)
         const contractABI = [
-            // Constructor
             {
                 "type": "constructor",
                 "inputs": [],
                 "stateMutability": "nonpayable"
             },
-            // Functions
             {
                 "type": "function",
                 "name": "fee",
@@ -520,7 +509,6 @@
                 "outputs": [],
                 "stateMutability": "nonpayable"
             },
-            // Events
             {
                 "type": "event",
                 "name": "DocumentRegistered",
@@ -565,7 +553,6 @@
                 ],
                 "anonymous": false
             },
-            // Errors
             {
                 "type": "error",
                 "name": "OwnableInvalidOwner",
@@ -590,10 +577,8 @@
             }
         ];
 
-        // Contract address (Ensure this matches your deployed contract)
         const contractAddress = '0xca2f282ab9d7b2ae33FDe040142C1c185B6591b4';
 
-        // Detect Edge and Display Appropriate Button
         document.addEventListener('DOMContentLoaded', () => {
             if (isEdge()) {
                 const coinbaseBtn = document.getElementById('coinbaseBtn');
@@ -605,6 +590,13 @@
                 } else {
                     console.error('Button elements not found');
                 }
+            }
+
+            // If the URL has a verifyHash parameter, verify that document automatically
+            const params = new URLSearchParams(window.location.search);
+            const verifyHash = params.get('verifyHash');
+            if (verifyHash) {
+                verifyDocumentByHash(verifyHash);
             }
         });
 
@@ -621,7 +613,6 @@
                     return;
                 }
             } else if (wallet === 'coinbase') {
-                // Initialize Coinbase Wallet SDK
                 try {
                     if (typeof CoinbaseWalletSDK === 'undefined') {
                         throw new Error('CoinbaseWalletSDK is not loaded');
@@ -629,7 +620,7 @@
 
                     coinbaseWallet = new CoinbaseWalletSDK({
                         appName: 'LockChain',
-                        appLogoUrl: 'https://yourapp.com/logo.png', // Ensure this URL is correct
+                        appLogoUrl: 'https://yourapp.com/logo.png',
                         darkMode: false
                     });
                     const coinbaseProvider = coinbaseWallet.makeWeb3Provider();
@@ -646,17 +637,13 @@
 
             try {
                 web3 = new Web3(selectedProvider);
-                // Request account access
                 await selectedProvider.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 account = accounts[0];
                 document.getElementById('walletAddress').innerText = 'Connected: ' + account;
                 contract = new web3.eth.Contract(contractABI, contractAddress);
 
-                // Check network
                 await checkNetwork();
-
-                // Fetch and display the current fee
                 await displayCurrentFee();
 
                 console.log('Connected account:', account);
@@ -668,14 +655,13 @@
 
         async function connectEdgeCoinbaseWallet() {
             try {
-                // Initialize Coinbase Wallet SDK for Edge
                 if (typeof CoinbaseWalletSDK === 'undefined') {
                     throw new Error('CoinbaseWalletSDK is not loaded');
                 }
 
                 const coinbaseWalletEdge = new CoinbaseWalletSDK({
                     appName: 'LockChain',
-                    appLogoUrl: 'https://yourapp.com/logo.png', // Ensure this URL is correct
+                    appLogoUrl: 'https://yourapp.com/logo.png',
                     darkMode: false
                 });
                 const coinbaseProviderEdge = coinbaseWalletEdge.makeWeb3Provider();
@@ -683,17 +669,13 @@
                 web3 = new Web3(coinbaseProviderEdge);
                 selectedProvider = coinbaseProviderEdge;
 
-                // Request account access
                 await selectedProvider.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 account = accounts[0];
                 document.getElementById('walletAddress').innerText = 'Connected: ' + account;
                 contract = new web3.eth.Contract(contractABI, contractAddress);
 
-                // Check network
                 await checkNetwork();
-
-                // Fetch and display the current fee
                 await displayCurrentFee();
 
                 console.log('Connected account (Edge):', account);
@@ -714,7 +696,6 @@
             alert('Wallet disconnected');
         }
 
-        // Function to fetch and display the current fee
         async function displayCurrentFee() {
             try {
                 const feeInWei = await contract.methods.getFee().call();
@@ -722,14 +703,13 @@
                 document.getElementById('currentFee').innerText = feeInEth + ' ETH';
                 document.getElementById('buttonFee').innerText = feeInEth + ' ETH';
                 document.getElementById('feeAmount').innerText = feeInEth + ' ETH';
-                document.getElementById('dynamicFee').innerText = feeInEth + ' ETH'; // Update dynamicFee
+                document.getElementById('dynamicFee').innerText = feeInEth + ' ETH';
             } catch (error) {
                 console.error('Error fetching current fee:', error);
                 alert('Error fetching current fee from the contract.');
             }
         }
 
-        // Function to hash the selected document
         async function hashDocument() {
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
@@ -742,15 +722,11 @@
             const arrayBuffer = await file.arrayBuffer();
             const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
-            hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            hashHex = '0x' + hashHex; // Add '0x' prefix to the hash
+            hashHex = '0x' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
             document.getElementById('hashOutput').innerText = `Document Hash: ${hashHex}`;
-
-            // Enable the register button
             document.getElementById('registerButton').disabled = false;
         }
 
-        // Function to register the hashed document on the blockchain
         async function registerHashOnBlockchain() {
             if (!web3 || !account) {
                 alert('Please connect your wallet first.');
@@ -771,15 +747,12 @@
                     return;
                 }
 
-                // Fetch the current fee from the contract
                 const feeInWei = await contract.methods.getFee().call();
-
-                // Show the loading overlay
                 document.getElementById('loadingOverlay').style.display = 'flex';
 
                 const receipt = await contract.methods.registerDocument(hashBytes32).send({
                     from: account,
-                    value: feeInWei, // Use the dynamic fee
+                    value: feeInWei
                 });
 
                 console.log('Transaction receipt:', receipt);
@@ -788,7 +761,6 @@
                 console.error('Error registering hash on blockchain:', error);
                 alert('Error registering hash on blockchain. See console for details.');
             } finally {
-                // Hide the loading overlay
                 document.getElementById('loadingOverlay').style.display = 'none';
             }
         }
@@ -821,8 +793,7 @@
             });
         }
 
-
-        // Function to verify a document's registration status
+        // Verify document by selecting a file
         async function verifyDocument() {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
@@ -839,30 +810,47 @@
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
                 const hashHexToVerify = '0x' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-                try {
-                    const isRegistered = await contract.methods.isDocumentRegistered(hashHexToVerify).call();
-                    if (isRegistered) {
-                        const details = await contract.methods.getDocumentDetails(hashHexToVerify).call();
-                        alert(`Document is registered.\nRegistrant: ${details.registrant}\nTimestamp: ${new Date(details.timestamp * 1000).toLocaleString()}`);
-                    } else {
-                        alert('Document is not registered.');
-                    }
-                } catch (error) {
-                    console.error('Error verifying document:', error);
-                    alert('Error verifying document.');
-                }
+                await verifyDocumentByHash(hashHexToVerify);
             };
             fileInput.click();
         }
 
-        // Function to check and switch network
+        // Verify document using a known hash (used when scanning QR code or using URL param)
+        async function verifyDocumentByHash(hashHexToVerify) {
+            if (!web3) {
+                // We need to ensure web3 and contract are initialized before verifying
+                // Attempt to re-initialize with a default provider (no wallet needed for view)
+                if (typeof Web3 !== 'undefined') {
+                    web3 = new Web3('https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID'); 
+                    // Replace with your own Infura endpoint if needed
+                    contract = new web3.eth.Contract(contractABI, contractAddress);
+                } else {
+                    alert('Web3 not found. Please connect a wallet or check your setup.');
+                    return;
+                }
+            }
+
+            try {
+                const isRegistered = await contract.methods.isDocumentRegistered(hashHexToVerify).call();
+                if (isRegistered) {
+                    const details = await contract.methods.getDocumentDetails(hashHexToVerify).call();
+                    alert(`Document is registered.\nRegistrant: ${details.registrant}\nTimestamp: ${new Date(details.timestamp * 1000).toLocaleString()}`);
+                } else {
+                    alert('Document is not registered.');
+                }
+            } catch (error) {
+                console.error('Error verifying document:', error);
+                alert('Error verifying document.');
+            }
+        }
+
         async function checkNetwork() {
             const chainId = await web3.eth.getChainId();
             if (chainId !== 11155111) { // Sepolia's chain ID
                 try {
                     await selectedProvider.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0xaa36a7' }], // 11155111 in hexadecimal
+                        params: [{ chainId: '0xaa36a7' }],
                     });
                 } catch (switchError) {
                     if (switchError.code === 4902) {
@@ -874,7 +862,6 @@
             }
         }
 
-        // Handle account and chain changes
         if (window.ethereum) {
             window.ethereum.on('accountsChanged', function (accounts) {
                 window.location.reload();
