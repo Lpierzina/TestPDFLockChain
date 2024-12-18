@@ -583,7 +583,7 @@
             if (isEdge()) {
                 const coinbaseBtn = document.getElementById('coinbaseBtn');
                 const edgeCoinbaseBtn = document.getElementById('edgeCoinbaseBtn');
-                
+
                 if (coinbaseBtn && edgeCoinbaseBtn) {
                     coinbaseBtn.style.display = 'none';
                     edgeCoinbaseBtn.style.display = 'none';
@@ -598,10 +598,29 @@
             if (verifyHash) {
                 verifyDocumentByHash(verifyHash);
             }
+
+            // Check if user is on mobile
+            if (isMobileDevice() && !window.ethereum) {
+                // Show a message or alter UI to guide mobile users
+                alert('If you are on mobile, please open this site inside your wallet app (e.g., MetaMask or Coinbase Wallet) to connect.');
+            }
         });
 
         function isEdge() {
             return navigator.userAgent.indexOf("Edg") > -1;
+        }
+
+        function isMobileDevice() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            // Check for Android
+            if (/android/i.test(userAgent)) {
+                return true;
+            }
+            // Check for iOS devices
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return true;
+            }
+            return false;
         }
 
         async function connectWallet(wallet) {
@@ -765,32 +784,32 @@
             }
         }
 
-       function generateReceipt(hashHex, account, transactionHash) {
-    const timestamp = new Date().toLocaleString();
-    const receiptContent = `
-        <strong>Document Hash:</strong> ${hashHex}<br>
-        <strong>Registered By:</strong> ${account}<br>
-        <strong>Date and Time:</strong> ${timestamp}<br>
-        <strong>Transaction Hash:</strong> <a href="https://sepolia.etherscan.io/tx/${transactionHash}" target="_blank">${transactionHash}</a>
-    `;
-    document.getElementById('receiptContent').innerHTML = receiptContent;
-    document.getElementById('receipt').style.display = 'block';
+        function generateReceipt(hashHex, account, transactionHash) {
+            const timestamp = new Date().toLocaleString();
+            const receiptContent = `
+                <strong>Document Hash:</strong> ${hashHex}<br>
+                <strong>Registered By:</strong> ${account}<br>
+                <strong>Date and Time:</strong> ${timestamp}<br>
+                <strong>Transaction Hash:</strong> <a href="https://sepolia.etherscan.io/tx/${transactionHash}" target="_blank">${transactionHash}</a>
+            `;
+            document.getElementById('receiptContent').innerHTML = receiptContent;
+            document.getElementById('receipt').style.display = 'block';
 
-    // Use Etherscan transaction URL for the QR code
-    const etherscanTxURL = `https://sepolia.etherscan.io/tx/${transactionHash}`;
+            // Use Etherscan transaction URL for the QR code
+            const etherscanTxURL = `https://sepolia.etherscan.io/tx/${transactionHash}`;
 
-    // Generate the QR code
-    const qrCodeDiv = document.getElementById('qrCode');
-    qrCodeDiv.innerHTML = ''; // Clear any previous QR code
-    new QRCode(qrCodeDiv, {
-        text: etherscanTxURL,
-        width: 128,
-        height: 128,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-    });
-}
+            // Generate the QR code
+            const qrCodeDiv = document.getElementById('qrCode');
+            qrCodeDiv.innerHTML = ''; // Clear any previous QR code
+            new QRCode(qrCodeDiv, {
+                text: etherscanTxURL,
+                width: 128,
+                height: 128,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
 
         // Verify document by selecting a file
         async function verifyDocument() {
@@ -820,7 +839,7 @@
                 // We need to ensure web3 and contract are initialized before verifying
                 // Attempt to re-initialize with a default provider (no wallet needed for view)
                 if (typeof Web3 !== 'undefined') {
-                    web3 = new Web3('https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID'); 
+                    web3 = new Web3('https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID');
                     // Replace with your own Infura endpoint if needed
                     contract = new web3.eth.Contract(contractABI, contractAddress);
                 } else {
@@ -860,9 +879,6 @@
                 }
             }
         }
-
-       
-        
     </script>
 </body>
 </html>
