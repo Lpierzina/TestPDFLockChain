@@ -791,13 +791,13 @@
                 <strong>Document Hash:</strong> ${hashHex}<br>
                 <strong>Registered By:</strong> ${account}<br>
                 <strong>Date and Time:</strong> ${timestamp}<br>
-                <strong>Transaction Hash:</strong> <a href="https://sepolia.etherscan.io/tx/${transactionHash}" target="_blank">${transactionHash}</a>
+                <strong>Transaction Hash:</strong> <a href="https://etherscan.io/tx/${transactionHash}" target="_blank">${transactionHash}</a>
             `;
             document.getElementById('receiptContent').innerHTML = receiptContent;
             document.getElementById('receipt').style.display = 'block';
 
             // Use Etherscan transaction URL for the QR code
-            const etherscanTxURL = `https://sepolia.etherscan.io/tx/${transactionHash}`;
+            const etherscanTxURL = `https://etherscan.io/tx/${transactionHash}`;
 
             // Generate the QR code
             const qrCodeDiv = document.getElementById('qrCode');
@@ -840,7 +840,7 @@
                 // We need to ensure web3 and contract are initialized before verifying
                 // Attempt to re-initialize with a default provider (no wallet needed for view)
                 if (typeof Web3 !== 'undefined') {
-                    web3 = new Web3('https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID');
+                    web3 = new Web3('https://eth-mainnet.g.alchemy.com/v2/DlloOg9phVabjuMziEUxAdV1a2veqPNU');
                     // Replace with your own Infura endpoint if needed
                     contract = new web3.eth.Contract(contractABI, contractAddress);
                 } else {
@@ -865,20 +865,20 @@
 
         async function checkNetwork() {
             const chainId = await web3.eth.getChainId();
-            if (chainId !== 11155111) { // Sepolia's chain ID
-                try {
-                    await selectedProvider.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0xaa36a7' }],
-                    });
-                } catch (switchError) {
-                    if (switchError.code === 4902) {
-                        alert('Please add the Sepolia network to your wallet.');
-                    } else {
-                        console.error('Error switching network:', switchError);
-                    }
-                }
-            }
+           if (chainId !== 1) { // Ethereum Mainnet chain ID
+    try {
+        await selectedProvider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x1' }], // Mainnet Chain ID in hexadecimal
+        });
+    } catch (switchError) {
+        if (switchError.code === 4902) {
+            alert('Please add the Ethereum Mainnet to your wallet.');
+        } else {
+            console.error('Error switching network:', switchError);
+        }
+    }
+}
         }
     </script>
 </body>
